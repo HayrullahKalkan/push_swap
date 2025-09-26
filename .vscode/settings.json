@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "push_swap.h": "c",
+        "random": "c",
+        "stdio.h": "c",
+        "limits": "c"
+    }
+}
