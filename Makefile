@@ -1,15 +1,15 @@
 NAME = push_swap
-SRC = push_swap.c other_files.c
+SRC = push_swap.c
 OBJ = $(SRC:.c=.o)
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -I. -Ilibft
+CFLAGS = -g -Wall -Wextra -Werror
 LIBFT_DIR = libft
 LIBFT = $(LIBFT_DIR)/libft.a
 
 all: $(LIBFT) $(NAME)
 
 $(LIBFT):
-	make -C $(LIBFT_DIR)
+	make bonus -C $(LIBFT_DIR)
 
 $(NAME): $(OBJ)
 	$(CC) $(CFLAGS) $(OBJ) $(LIBFT) -o $(NAME)

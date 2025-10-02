@@ -6,7 +6,7 @@
 /*   By: hakalkan <hakalkan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 18:49:28 by hakalkan          #+#    #+#             */
-/*   Updated: 2025/09/26 15:01:46 by hakalkan         ###   ########.fr       */
+/*   Updated: 2025/10/02 00:31:44 by hakalkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,14 +15,14 @@
 
 #include <stdlib.h>
 #include <unistd.h>
-#include "libft.h"
+#include "libft/libft.h"
 #include <stdio.h>
 
 typedef struct s_stack
 {
 	int				data;
 	struct s_list	*next;
-
+	int 			movecount;
 	
 }	t_stack;
 

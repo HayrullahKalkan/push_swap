@@ -6,7 +6,7 @@
 /*   By: hakalkan <hakalkan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 19:31:00 by hakalkan          #+#    #+#             */
-/*   Updated: 2025/09/26 16:33:14 by hakalkan         ###   ########.fr       */
+/*   Updated: 2025/10/02 04:12:29 by hakalkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ void ss(t_list **stack_a, t_list **stack_b)
 t_list *pop(t_list **lst)
 {
 	t_list *head;
-
+	
 	head = *lst;
 	*lst = (*lst)->next;
 	head->next = NULL;
@@ -66,11 +66,16 @@ void pa(t_list **stack_a, t_list **stack_b)
 
 void pb(t_list **stack_a, t_list **stack_b)
 {
-	t_list *head_b;
+	t_list *head_a;
 	
-	head_b = pop(stack_b);
-	head_b->next = (*stack_a); 
-	*stack_a = head_b;
+	if(!(*stack_a))
+		return;
+	head_a = malloc(sizeof(t_list *));
+	head_a = pop(stack_a);
+	head_a->next = (*stack_b); 
+	*stack_b = head_a;
+	
+	free(head_a);
 }
 
 void ra(t_list **lst)
@@ -178,13 +183,15 @@ int *max_min(char **argv, int len)
 		digit = ft_atol(argv[i]);
 		if(digit < -2147483648 || digit > 2147483647)
 		{
-			write(1,"Error\n",6);
+			write(1,"Error3\n",6);
 			free(a);
 			return (NULL);
 		}
 		a[i] = digit;
 		i++;
 	}
+	i = 0;
+	
 	return a;
 }
 
@@ -232,24 +239,29 @@ int checker_digits(char **argv)
 	}
 	return (1);
 }
-int *checker(char **argv)
+
+int arg_len(char **argv)
 {
-	char **digits;
-	char **tmp;
 	int i;
 	int j;
-	int *ar;
-	int k;
-	
-	k = 0;
+
 	j = 0;
-	i = 1;
-	digits = NULL;
-	while (argv[i++])
+	i = 0;
+	while (argv[i])
+	{
 		j += count_word(argv[i],' ');
-	digits = malloc(sizeof(char *) * (j + 1));
-	if(!digits)
-		return NULL;
+		i++;
+	}
+	
+	return j;
+}
+void arg_split(char **argv, char **digits,int *k)
+{
+	int j;
+	int i;
+	char **tmp;
+
+	j = 0;
 	i = 1;
 	while (argv[i])
 	{
@@ -257,49 +269,115 @@ int *checker(char **argv)
 		j = 0;
 		while (tmp[j])
 		{
-			digits[k++] = ft_strdup(tmp[j]);
+			digits[*k] = ft_strdup(tmp[j]);
+			(*k)++;
 			j++;
 		}
 		i++;
 	}
+	digits[*k] = NULL;
+}
+int *checker(char **argv)
+{
+	char **digits;
+	int *ar;
+	int k;
+	
+	k = 0;
+	digits = NULL;
+	digits = malloc(sizeof(char *) * (arg_len(argv) + 1));
+	if(!digits)
+		return NULL;
+	arg_split(argv,digits,&k);
 	digits[k] = NULL;
-
 	if (checker_digits(digits) == 1)
 	{
 		ar = max_min(digits,k);
-		if(check_dup(ar, i))
-			write(1,"Error\n",6);
+		if (ar == NULL)
+            return (free(digits),(NULL));
+		if(check_dup(ar, k))
+			return (write(1,"Error1\n",6), NULL);
 		return ar;
 	}
 	else
-		write(1,"Error\n",6);
+		return (write(1,"Error2\n",6),NULL);
 
-	return 0;	
+	return NULL;	
 }
-// size_t **parser(int *ar)
-// {
-// 	int i;
-// 	size_t	**stack;
-// 	size_t *node;
-// 	i = 0;
-// 	while (ar[i])
-// 	{
-// 		node = ft_lstnew(ar[i]);
-// 		ft_lstadd_back(*stack,node);
-// 	}
+
+t_list **parser(int *ar)
+{
+	int i;
+	t_list	**stack;
+	t_list *node;
+	int *content;
 	
-// }
+	stack = malloc(sizeof(t_list *));
+    if (!stack)
+        return NULL;
+    *stack = NULL;
+	i = 0;
+	while (ar[i])
+	{
+		content = malloc(sizeof(int));
+		if(!content)
+			return NULL;
+		*content = ar[i];
+		node = ft_lstnew(content);
+		ft_lstadd_back(stack,node);
+		i++;
+	}
+	return ((t_list **)stack);
+}
 #include <stdio.h>
+
+void move_count(t_list **stack)
+{
+	int count;
+
+	count = ft_lstsize(*stack);
+
+	printf("%d",count);
+	
+}
+void first_two_push(t_list **stack_a, t_list **stack_b)
+{
+	pb(stack_a,stack_b);
+	pb(stack_a,stack_b);
+	
+}
+
+void turk_sort(t_list **stack)
+{
+	t_list **stack_b;
+	
+	stack_b = NULL;
+	first_two_push(stack,stack_b);
+	
+}
 
 int main(int ac, char **argv)
 {
 	int i;
 	int *arr;
-	printf("a");
+	t_list **stack;
+
+	stack = NULL;
 	i = 0;
 	if(ac > 1)
 	{
 		arr = checker(argv);
+		if (arr == NULL)
+			return 0;
+		
+		stack =  parser(arr);
+		turk_sort(stack);
+		while (*stack != NULL)
+		{
+			printf("%d ",*((int *)(*stack)->content));
+			*stack = (*stack)->next;
+		}
+		move_count(stack);
 	}
 	else
 		return (0);
@@ -308,25 +386,3 @@ int main(int ac, char **argv)
 
 
 
-// int main(int ac, char **argv)
-// {
-// 	int *arr;
-// 	int len;
-
-// 	if (ac < 2)
-// 		return (0);
-
-// 	if (!checker(argv))
-// 		return (1);
-
-// 	len = ac - 1;
-// 	arr = max_min(argv, ac);
-// 	if (!arr)
-// 		return (1);
-
-// 	if (check_dup(arr, len))
-// 	{
-// 		free(arr);
-// 		return (1);
-// 	}
-// }
