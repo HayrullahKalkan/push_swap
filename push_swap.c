@@ -6,147 +6,11 @@
 /*   By: hakalkan <hakalkan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 19:31:00 by hakalkan          #+#    #+#             */
-/*   Updated: 2025/10/02 04:12:29 by hakalkan         ###   ########.fr       */
+/*   Updated: 2025/10/13 17:20:06 by hakalkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "push_swap.h"
-
-void sa(t_list **lst)
-{
-	t_list *tmp; //a
-	t_list *tmp2; //b
-
-	tmp = *lst;
-	tmp2 = (*lst) -> next;
-
-	(*lst) = tmp -> next;
-	(*lst) -> next = tmp;
-	tmp ->next = tmp2->next;
-
-}
-
-void sb(t_list **lst)
-{
-	t_list *tmp; //a
-	t_list *tmp2; //b
-
-	tmp = *lst;
-	tmp2 = (*lst) -> next;
-
-	(*lst) = tmp -> next;
-	(*lst) -> next = tmp;
-	tmp ->next = tmp2->next;
-
-}
-void ss(t_list **stack_a, t_list **stack_b)
-{
-	sa(stack_a);
-	sb(stack_b);
-}
-
-t_list *pop(t_list **lst)
-{
-	t_list *head;
-	
-	head = *lst;
-	*lst = (*lst)->next;
-	head->next = NULL;
-	return (head);
-}
-
-void pa(t_list **stack_a, t_list **stack_b)
-{
-	t_list *head_b;
-	
-	head_b = pop(stack_b);
-	head_b->next = (*stack_a); 
-	*stack_a = head_b;
-}
-
-void pb(t_list **stack_a, t_list **stack_b)
-{
-	t_list *head_a;
-	
-	if(!(*stack_a))
-		return;
-	head_a = malloc(sizeof(t_list *));
-	head_a = pop(stack_a);
-	head_a->next = (*stack_b); 
-	*stack_b = head_a;
-	
-	free(head_a);
-}
-
-void ra(t_list **lst)
-{
-	t_list *head;
-	t_list *end;
-
-	head = *lst;
-	end = ft_lstlast(*lst);
-	*lst = (*lst)->next;
-	end->next= head;
-	head->next = NULL;
-}
-
-void rb(t_list **lst)
-{
-	t_list *head;
-	t_list *end;
-
-	head = *lst;
-	end = ft_lstlast(*lst);
-	*lst = (*lst)->next;
-	end->next= head;
-	head->next = NULL;
-}
-void rr(t_list **stack_a, t_list **stack_b)
-{
-	ra(stack_a);
-	rb(stack_b);   
-}
-void rra(t_list **lst)
-{
-	t_list *new_head;
-	t_list *new_end;
-	
-	
-	new_head = (*lst);
-	while (new_head->next)
-	{
-		new_end = new_head;
-		new_head = new_head->next;
-	}
-	
-	new_head ->next = (*lst);
-	*lst = new_head;
-	new_end->next = NULL;
-}
-
-void rrb(t_list **lst)
-{
-	t_list *new_head;
-	t_list *new_end;
-	
-	
-	new_head = (*lst);
-	while (new_head->next)
-	{
-		new_end = new_head;
-		new_head = new_head->next;
-	}
-	
-	new_head ->next = (*lst);
-	*lst = new_head;
-	new_end->next = NULL;
-}
-
-void rrr(t_list **stack_a, t_list **stack_b)
-{
-	rra(stack_a);
-	rrb(stack_b);   
-}
 
 long ft_atol(char *str)
 {
@@ -344,15 +208,21 @@ void first_two_push(t_list **stack_a, t_list **stack_b)
 {
 	pb(stack_a,stack_b);
 	pb(stack_a,stack_b);
+	while (*stack_b)
+	{
+		printf("b%d ",*((int *)(*stack_b)->content));
+		*stack_b = (*stack_b)->next;
+	}
+	
 	
 }
 
 void turk_sort(t_list **stack)
 {
-	t_list **stack_b;
+	t_list *stack_b;
 	
 	stack_b = NULL;
-	first_two_push(stack,stack_b);
+	first_two_push(stack,&stack_b);
 	
 }
 
@@ -377,12 +247,11 @@ int main(int ac, char **argv)
 			printf("%d ",*((int *)(*stack)->content));
 			*stack = (*stack)->next;
 		}
-		move_count(stack);
+		
 	}
 	else
 		return (0);
-	   
 }
 
 
-
+//a nın ve b nin maliyetini ayrı ayrı hesaplayıp topla
