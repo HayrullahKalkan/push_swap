@@ -6,7 +6,7 @@
 /*   By: hakalkan <hakalkan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 19:31:00 by hakalkan          #+#    #+#             */
-/*   Updated: 2025/10/13 17:20:06 by hakalkan         ###   ########.fr       */
+/*   Updated: 2025/10/14 21:16:57 by hakalkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,68 +169,143 @@ int *checker(char **argv)
 	return NULL;	
 }
 
-t_list **parser(int *ar)
+t_stack *parser(int *ar)
 {
 	int i;
-	t_list	**stack;
-	t_list *node;
-	int *content;
+	t_stack	*stack;
+	t_stack *node;
+	int content;
 	
-	stack = malloc(sizeof(t_list *));
+	stack = malloc(sizeof(t_stack *));
     if (!stack)
         return NULL;
-    *stack = NULL;
+    stack = NULL;
 	i = 0;
 	while (ar[i])
 	{
-		content = malloc(sizeof(int));
+		content = ar[i];
 		if(!content)
 			return NULL;
-		*content = ar[i];
-		node = ft_lstnew(content);
-		ft_lstadd_back(stack,node);
+		node = lstnew(content);
+		lstadd_back(&stack,node);
 		i++;
 	}
-	return ((t_list **)stack);
+
+	return (stack);
 }
 #include <stdio.h>
 
-void move_count(t_list **stack)
+void cost_accounting(t_stack **stack_a)
 {
-	int count;
+	t_stack *tmp;
+	int size;
+	int i;
 
-	count = ft_lstsize(*stack);
-
-	printf("%d",count);
+	tmp = *stack_a;
+	size = lstsize(*stack_a);
+	i = 0;
+	while (tmp)
+	{
+		if (i <= size / 2)
+			tmp->cost = i;
+		else
+			tmp->cost = (size - i) * -1;
+		i++;
+		tmp = tmp->next;
+	}
+	while (*stack_a)
+	{
+		printf("%d ",(*stack_a)->cost);
+		*stack_a = (*stack_a)->next;
+	}
 	
 }
-void first_two_push(t_list **stack_a, t_list **stack_b)
+void first_two_push(t_stack **stack_a, t_stack **stack_b)
 {
 	pb(stack_a,stack_b);
 	pb(stack_a,stack_b);
-	while (*stack_b)
+}
+
+
+void cost_total(t_stack *stack_a, t_stack *stack_b)
+{
+	if(stack_a->cost < 0 && stack_b->cost < 0)
 	{
-		printf("b%d ",*((int *)(*stack_b)->content));
-		*stack_b = (*stack_b)->next;
+		if(stack_a->cost > stack_b->cost)
+			stack_a->tot_cos = stack_b->cost * -1;
+		else if (stack_b->cost > stack_a->cost)
+			stack_a->tot_cos = stack_a->cost * -1;
+		else
+			stack_a->tot_cos = stack_a->cost * -1;
+	}
+	else if(stack_a->data > 0 && stack_b->data > 0)
+		stack_a->tot_cos = stack_a->cost + stack_b->cost;
+	else
+	{
+		if (stack_a->cost < 0)
+			stack_a->cost = stack_a->cost * -1;
+		else if(stack_b->cost < 0)
+			stack_b->cost = stack_b->cost * -1;
+		stack_a->tot_cos = stack_a->cost + stack_b->cost;
+	}
+}
+t_stack *min_stack_b(t_stack *stack_a, t_stack *stack_b)
+{
+	t_stack *tmp;
+	t_stack *tmp_b;
+	
+	tmp_b = stack_b;
+	int max;
+	tmp = stack_a;
+	max = -2147483648;
+	while (tmp_b->next)
+	{
+		if(tmp_b->data < stack_a->data && tmp_b->data > max)
+		{
+			max = tmp_b->data;
+		}
+		else 
+			tmp_b = tmp_b->next;
+	}
+
+	return (tmp_b); 
+}
+
+void find_target(t_stack **stack_a, t_stack **stack_b)
+{
+	t_stack *tmp_a;
+	t_stack *tmp_b;
+	
+	tmp_a = *stack_a;
+	tmp_b = *stack_b;
+	while (tmp_a)
+	{
+		cost_total(tmp_a, min_stack_b(tmp_a,tmp_b));
+		tmp_a = tmp_a->next;
+	}
+	while (*stack_a)
+	{
+		printf("cost = %d ",(*stack_a)->tot_cos);
+		*stack_a = (*stack_a)->next;
 	}
 	
 	
 }
-
-void turk_sort(t_list **stack)
+void turk_sort(t_stack **stack)
 {
-	t_list *stack_b;
+	t_stack *stack_b;
 	
 	stack_b = NULL;
 	first_two_push(stack,&stack_b);
-	
+	cost_accounting(stack);
+	cost_accounting(&stack_b);
+	find_target(stack,&stack_b);
 }
-
 int main(int ac, char **argv)
 {
 	int i;
 	int *arr;
-	t_list **stack;
+	t_stack *stack;
 
 	stack = NULL;
 	i = 0;
@@ -241,13 +316,13 @@ int main(int ac, char **argv)
 			return 0;
 		
 		stack =  parser(arr);
-		turk_sort(stack);
-		while (*stack != NULL)
-		{
-			printf("%d ",*((int *)(*stack)->content));
-			*stack = (*stack)->next;
-		}
-		
+		turk_sort(&stack);
+	
+		// while (stack != NULL)
+		// {
+		// 	printf("a%d ",((int)stack->data));		
+		// 	stack = stack->next;
+		// }
 	}
 	else
 		return (0);

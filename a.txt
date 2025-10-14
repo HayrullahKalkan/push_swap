@@ -1,0 +1,46 @@
+a stağiinin başını aldım kendinden küçük en büyük sayı var mı diye baktım varsa onun üstünde olacak
+eğer yoksa b stağinin en büyüğünün üstüne olmalı 
+ve bu işlem bütün a staği gezilerek yapılmalı.
+
+rrr f_max()
+ 678 45 3 6 7 
+
+-4 -3 
+-3 -2
+-2 -1
+-1 0
+0 0
+while (stasck_a < 0 && stack_b < 0)
+{
+    rrr();
+    stacka--;
+    stackb--;
+}
+while (stack_a < 0)
+{
+    rra()
+}
+while (stacb< 0)
+{
+    rrb();
+}
+
+
+0 1 2 3 4 5 -4 -3 -2 -1
+
+
+
+
+
+
+39
+25
+21
+15
+14
+13
+2
+1
+
+
+
