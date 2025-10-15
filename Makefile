@@ -1,5 +1,5 @@
 NAME = push_swap
-SRC = push_swap.c push.c parser.c reverse.c swap.c lst_function.c
+SRC = push_swap.c push.c parser.c reverse.c reverse_re.c swap.c lst_function.c
 OBJ = $(SRC:.c=.o)
 CC = cc
 CFLAGS = -g -Wall -Wextra -Werror

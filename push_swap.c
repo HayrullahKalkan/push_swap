@@ -59,6 +59,7 @@ int *max_min(char **argv, int len)
 	return a;
 }
 
+
 int check_dup(int *arr, int len)
 {
 	int i;
@@ -213,13 +214,8 @@ void cost_accounting(t_stack **stack_a)
 		i++;
 		tmp = tmp->next;
 	}
-	while (*stack_a)
-	{
-		printf("%d ",(*stack_a)->cost);
-		*stack_a = (*stack_a)->next;
-	}
-	
 }
+
 void first_two_push(t_stack **stack_a, t_stack **stack_b)
 {
 	pb(stack_a,stack_b);
@@ -229,48 +225,135 @@ void first_two_push(t_stack **stack_a, t_stack **stack_b)
 
 void cost_total(t_stack *stack_a, t_stack *stack_b)
 {
-	if(stack_a->cost < 0 && stack_b->cost < 0)
+	int i;
+	int j;
+
+	i = 0;
+	j = 0;
+	if (stack_a->cost < 0 && stack_b->cost < 0)
 	{
-		if(stack_a->cost > stack_b->cost)
+		if (stack_a->cost > stack_b->cost)
 			stack_a->tot_cos = stack_b->cost * -1;
-		else if (stack_b->cost > stack_a->cost)
-			stack_a->tot_cos = stack_a->cost * -1;
 		else
 			stack_a->tot_cos = stack_a->cost * -1;
 	}
-	else if(stack_a->data > 0 && stack_b->data > 0)
+	else if (stack_a->cost > 0 && stack_b->cost > 0)
 		stack_a->tot_cos = stack_a->cost + stack_b->cost;
 	else
 	{
 		if (stack_a->cost < 0)
-			stack_a->cost = stack_a->cost * -1;
-		else if(stack_b->cost < 0)
-			stack_b->cost = stack_b->cost * -1;
-		stack_a->tot_cos = stack_a->cost + stack_b->cost;
+			i = stack_a->cost * -1;
+		if (stack_b->cost < 0)
+			j = stack_b->cost * -1;
+		if (i > 0)
+			stack_a->tot_cos = i + stack_b->cost;
+		else
+			stack_a->tot_cos = stack_a->cost + j;
 	}
 }
+
+t_stack *find_biggest(t_stack *stack_b)
+{
+    t_stack *tmp_b = stack_b;
+    t_stack *best = NULL;
+    int biggest = -2147483648;
+
+    while (tmp_b)
+    {
+        if (tmp_b->data > biggest)
+        {
+            biggest = tmp_b->data;
+            best = tmp_b;
+        }
+        tmp_b = tmp_b->next;
+    }
+    return (best);
+}
+
 t_stack *min_stack_b(t_stack *stack_a, t_stack *stack_b)
 {
-	t_stack *tmp;
-	t_stack *tmp_b;
-	
-	tmp_b = stack_b;
-	int max;
-	tmp = stack_a;
-	max = -2147483648;
-	while (tmp_b->next)
-	{
-		if(tmp_b->data < stack_a->data && tmp_b->data > max)
-		{
-			max = tmp_b->data;
-		}
-		else 
-			tmp_b = tmp_b->next;
-	}
+    t_stack *tmp_b;
+    t_stack *best;
+    int max;
 
-	return (tmp_b); 
+	tmp_b = stack_b;
+	best = NULL;
+	max = -2147483648;
+    while (tmp_b)
+    {
+        if (tmp_b->data < stack_a->data && tmp_b->data > max)
+        {
+            max = tmp_b->data;
+            best = tmp_b;
+        }
+        tmp_b = tmp_b->next;
+    }
+    if (best == NULL)
+        best = find_biggest(stack_b);
+    return (best);
+}
+t_stack *target_push(t_stack **stack_a)
+{
+	t_stack *tmp;
+	t_stack *target;
+	int max;
+
+	max = 0;
+	tmp = (*stack_a);
+	while (tmp)
+	{
+		if(tmp->tot_cos > max)
+		{
+			max = tmp->tot_cos;
+			target = tmp;
+		}
+		tmp = tmp->next;
+	}
+	return target;
 }
 
+void get_location(t_stack **stack_a, t_stack **stack_b)
+{
+	t_stack *target_a;
+	t_stack *target_b;
+	int a;
+	int b;
+
+	target_a = target_push(stack_a);
+	target_b = min_stack_b(*stack_a, *stack_b);
+	a = target_a->cost;
+	b = target_b->cost;
+	while (*stack_a != target_a || *stack_b != target_b)
+	{
+		if(a > 0 && b > 0)
+		{
+			rr(stack_a, stack_b);
+    		a--;
+    		b--;
+		}
+		else if(a < 0 && b < 0)
+		{
+			rrr(stack_a, stack_b);
+    		a++;
+    		b++;
+		}
+		if(a != 0)
+		{
+    		if(a > 0)
+        		ra(stack_a), a--;
+    		else
+        		rra(stack_a), b++;
+		}
+		while(b != 0)
+		{
+    		if(b > 0)
+        		rb(stack_b), b--;
+    		else
+        		rrb(stack_b), b++; 
+		}
+	}
+	pb(stack_a,stack_b);
+}
 void find_target(t_stack **stack_a, t_stack **stack_b)
 {
 	t_stack *tmp_a;
@@ -283,32 +366,27 @@ void find_target(t_stack **stack_a, t_stack **stack_b)
 		cost_total(tmp_a, min_stack_b(tmp_a,tmp_b));
 		tmp_a = tmp_a->next;
 	}
-	while (*stack_a)
-	{
-		printf("cost = %d ",(*stack_a)->tot_cos);
-		*stack_a = (*stack_a)->next;
-	}
-	
-	
 }
+
 void turk_sort(t_stack **stack)
 {
 	t_stack *stack_b;
 	
 	stack_b = NULL;
 	first_two_push(stack,&stack_b);
+
 	cost_accounting(stack);
 	cost_accounting(&stack_b);
 	find_target(stack,&stack_b);
+	get_location(stack,&stack_b);
 }
+
 int main(int ac, char **argv)
 {
-	int i;
 	int *arr;
 	t_stack *stack;
 
 	stack = NULL;
-	i = 0;
 	if(ac > 1)
 	{
 		arr = checker(argv);
