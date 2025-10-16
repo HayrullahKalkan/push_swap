@@ -6,7 +6,7 @@
 /*   By: hakalkan <hakalkan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 19:31:00 by hakalkan          #+#    #+#             */
-/*   Updated: 2025/10/14 21:16:57 by hakalkan         ###   ########.fr       */
+/*   Updated: 2025/10/16 18:03:28 by hakalkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -203,7 +203,8 @@ void cost_accounting(t_stack **stack_a)
 	int i;
 
 	tmp = *stack_a;
-	size = lstsize(*stack_a);
+	size = lstsize(tmp);
+	tmp = *stack_a;
 	i = 0;
 	while (tmp)
 	{
@@ -296,15 +297,15 @@ t_stack *target_push(t_stack **stack_a)
 {
 	t_stack *tmp;
 	t_stack *target;
-	int max;
+	int min;
 
-	max = 0;
+	min = 2147483647;
 	tmp = (*stack_a);
 	while (tmp)
 	{
-		if(tmp->tot_cos > max)
+		if(tmp->tot_cos < min)
 		{
-			max = tmp->tot_cos;
+			min = tmp->tot_cos;
 			target = tmp;
 		}
 		tmp = tmp->next;
@@ -318,7 +319,7 @@ void get_location(t_stack **stack_a, t_stack **stack_b)
 	t_stack *target_b;
 	int a;
 	int b;
-
+	
 	target_a = target_push(stack_a);
 	target_b = min_stack_b(*stack_a, *stack_b);
 	a = target_a->cost;
@@ -337,20 +338,22 @@ void get_location(t_stack **stack_a, t_stack **stack_b)
     		a++;
     		b++;
 		}
-		if(a != 0)
+		else if(a != 0)
 		{
     		if(a > 0)
         		ra(stack_a), a--;
     		else
-        		rra(stack_a), b++;
+        		rra(stack_a), a++;
 		}
-		while(b != 0)
+		else if(b != 0)
 		{
     		if(b > 0)
         		rb(stack_b), b--;
     		else
         		rrb(stack_b), b++; 
 		}
+		else 
+			break;
 	}
 	pb(stack_a,stack_b);
 }
@@ -371,14 +374,31 @@ void find_target(t_stack **stack_a, t_stack **stack_b)
 void turk_sort(t_stack **stack)
 {
 	t_stack *stack_b;
-	
+	int size;
 	stack_b = NULL;
+	t_stack *tmp;
+	
 	first_two_push(stack,&stack_b);
-
+	
+	tmp = (*stack);
+	size = lstsize(tmp);
 	cost_accounting(stack);
 	cost_accounting(&stack_b);
-	find_target(stack,&stack_b);
-	get_location(stack,&stack_b);
+
+	while (size > 3)
+	{
+		find_target(stack,&stack_b);
+		get_location(stack,&stack_b);
+		cost_accounting(&stack_b);
+		cost_accounting(stack);
+
+		size--;
+	}
+	while (stack_b)
+	{
+		printf("%d\n",stack_b->data);
+		stack_b = stack_b->next;
+	}
 }
 
 int main(int ac, char **argv)
