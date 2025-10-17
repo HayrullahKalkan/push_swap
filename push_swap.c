@@ -196,6 +196,33 @@ t_stack *parser(int *ar)
 }
 #include <stdio.h>
 
+void sort_three(t_stack **stack)
+{
+    int a;
+    int b;
+    int c;
+
+	a = (*stack)->data;
+	b = (*stack)->next->data;
+	c = (*stack)->next->next->data;
+  	if (a > b && b < c && a < c)
+        sa(stack);
+    else if (a > b && b > c)
+    {
+        sa(stack);                 // 3 2 1
+        rra(stack);
+    }
+    else if (a > b && b < c && a > c)
+        ra(stack);                 // 2 3 1
+    else if (a < b && b > c && a < c)
+    {
+        rra(stack);                // 1 3 2
+        sa(stack);
+    }
+    else if (a < b && b > c && a > c)
+        rra(stack);                // 2 3 1
+}
+
 void cost_accounting(t_stack **stack_a)
 {
 	t_stack *tmp;
@@ -299,8 +326,8 @@ t_stack *target_push(t_stack **stack_a)
 	t_stack *target;
 	int min;
 
-	min = 2147483647;
 	tmp = (*stack_a);
+	min = tmp->tot_cos;
 	while (tmp)
 	{
 		if(tmp->tot_cos < min)
@@ -321,7 +348,7 @@ void get_location(t_stack **stack_a, t_stack **stack_b)
 	int b;
 	
 	target_a = target_push(stack_a);
-	target_b = min_stack_b(*stack_a, *stack_b);
+	target_b = min_stack_b(target_a, *stack_b);
 	a = target_a->cost;
 	b = target_b->cost;
 	while (*stack_a != target_a || *stack_b != target_b)
@@ -370,36 +397,138 @@ void find_target(t_stack **stack_a, t_stack **stack_b)
 		tmp_a = tmp_a->next;
 	}
 }
+t_stack *find_target_in_a(t_stack *stack_a, int value)
+{
+    t_stack *tmp = stack_a;
+    t_stack *target = NULL;
+    int min_diff = 2147483647;
+
+    while (tmp)
+    {
+        if (tmp->data > value && (tmp->data - value) < min_diff)
+        {
+            min_diff = tmp->data - value;
+            target = tmp;
+        }
+        tmp = tmp->next;
+    }
+    if (!target)
+    {
+        tmp = stack_a;
+        int max = -2147483648;
+        while (tmp)
+        {
+            if (tmp->data > max)
+            {
+                max = tmp->data;
+                target = tmp;
+            }
+            tmp = tmp->next;
+        }
+    }
+    return target;
+}
+void bring_min_to_top(t_stack **stack_a)
+{
+    if (!stack_a || !*stack_a)
+        return;
+
+    t_stack *tmp = *stack_a;
+    t_stack *min_node = *stack_a;
+    int pos = 0;
+    int min_pos = 0;
+
+    while (tmp)
+    {
+        if (tmp->data < min_node->data)
+        {
+            min_node = tmp;
+            min_pos = pos;
+        }
+        tmp = tmp->next;
+        pos++;
+    }
+    int size = lstsize(*stack_a);
+    if (min_pos <= size / 2)
+    {
+        while (*stack_a != min_node)
+            ra(stack_a);
+    }
+    else
+    {
+        while (*stack_a != min_node)
+            rra(stack_a);
+    }
+}
+
+void push_back_to_a(t_stack **stack_a, t_stack **stack_b)
+{
+    while (*stack_b)
+    {
+        t_stack *max_b = find_biggest(*stack_b);
+        t_stack *target_a = find_target_in_a(*stack_a, max_b->data);
+
+        max_b = find_biggest(*stack_b);
+        target_a = find_target_in_a(*stack_a, max_b->data);
+        while (*stack_b != max_b)
+        {
+            if (max_b->cost > 0)
+                rb(stack_b);
+            else
+                rrb(stack_b);
+        }
+        while (*stack_a != target_a)
+        {
+            if (target_a->cost > 0)
+                ra(stack_a);
+            else
+                rra(stack_a);
+        }
+        pa(stack_a, stack_b);
+    }
+}
 
 void turk_sort(t_stack **stack)
 {
-	t_stack *stack_b;
-	int size;
-	stack_b = NULL;
-	t_stack *tmp;
-	
-	first_two_push(stack,&stack_b);
-	
-	tmp = (*stack);
-	size = lstsize(tmp);
-	cost_accounting(stack);
-	cost_accounting(&stack_b);
+    t_stack *stack_b = NULL;
 
-	while (size > 3)
-	{
-		find_target(stack,&stack_b);
-		get_location(stack,&stack_b);
-		cost_accounting(&stack_b);
-		cost_accounting(stack);
+    first_two_push(stack, &stack_b);
 
-		size--;
-	}
-	while (stack_b)
-	{
-		printf("%d\n",stack_b->data);
-		stack_b = stack_b->next;
-	}
+    cost_accounting(stack);
+    cost_accounting(&stack_b);
+    find_target(stack, &stack_b);
+
+    while (lstsize(*stack) > 3)
+    {
+        get_location(stack, &stack_b);
+        cost_accounting(stack);
+        cost_accounting(&stack_b);
+        find_target(stack, &stack_b);
+    }
+
+    printf("burda\n");
+
+    sort_three(stack);
+
+    printf("burda\n");
+    t_stack *tmp_b = stack_b;
+    while (tmp_b)
+    {
+        printf("b%d\n", tmp_b->data);
+        tmp_b = tmp_b->next;
+    }
+	push_back_to_a(stack, &stack_b);
+	//bring_min_to_top(stack);
+
+	t_stack *tmp_a = *stack;
+    while (tmp_a)
+    {
+        printf("a%d\n", tmp_a->data);
+        tmp_a = tmp_a->next;
+    }
+	
 }
+
 
 int main(int ac, char **argv)
 {

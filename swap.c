@@ -14,17 +14,20 @@
 
 void sa(t_stack **lst)
 {
-	t_stack *tmp; //a
-	t_stack *tmp2; //b
+    t_stack *first;
+    t_stack *second;
 
-	tmp = *lst;
-	tmp2 = (*lst) -> next;
+    if (!lst || !*lst || !(*lst)->next)
+        return;
 
-	(*lst) = tmp -> next;
-	(*lst) -> next = tmp;
-	tmp ->next = tmp2->next;
+    first = *lst;
+    second = (*lst)->next;
 
+    first->next = second->next;
+    second->next = first;
+    *lst = second;
 }
+
 
 void sb(t_stack **lst)
 {
