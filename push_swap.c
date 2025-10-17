@@ -6,7 +6,7 @@
 /*   By: hakalkan <hakalkan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 19:31:00 by hakalkan          #+#    #+#             */
-/*   Updated: 2025/10/16 18:03:28 by hakalkan         ###   ########.fr       */
+/*   Updated: 2025/10/17 20:52:00 by hakalkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -201,26 +201,27 @@ void sort_three(t_stack **stack)
     int a;
     int b;
     int c;
-
+	// abc
+	// acb
 	a = (*stack)->data;
 	b = (*stack)->next->data;
 	c = (*stack)->next->next->data;
   	if (a > b && b < c && a < c)
-        sa(stack);
+        sa(stack,0);  
     else if (a > b && b > c)
     {
-        sa(stack);                 // 3 2 1
-        rra(stack);
+        sa(stack,0);
+        rra(stack,0);
     }
     else if (a > b && b < c && a > c)
-        ra(stack);                 // 2 3 1
+        ra(stack,0);
     else if (a < b && b > c && a < c)
     {
-        rra(stack);                // 1 3 2
-        sa(stack);
+        rra(stack,0);
+        sa(stack,0);
     }
     else if (a < b && b > c && a > c)
-        rra(stack);                // 2 3 1
+        rra(stack,0);
 }
 
 void cost_accounting(t_stack **stack_a)
@@ -327,7 +328,7 @@ t_stack *target_push(t_stack **stack_a)
 	int min;
 
 	tmp = (*stack_a);
-	min = tmp->tot_cos;
+	min = 2147483647;
 	while (tmp)
 	{
 		if(tmp->tot_cos < min)
@@ -355,29 +356,29 @@ void get_location(t_stack **stack_a, t_stack **stack_b)
 	{
 		if(a > 0 && b > 0)
 		{
-			rr(stack_a, stack_b);
+			rr(stack_a, stack_b,1);
     		a--;
     		b--;
 		}
 		else if(a < 0 && b < 0)
 		{
-			rrr(stack_a, stack_b);
+			rrr(stack_a, stack_b,1);
     		a++;
     		b++;
 		}
 		else if(a != 0)
 		{
     		if(a > 0)
-        		ra(stack_a), a--;
+        		ra(stack_a,0), a--;
     		else
-        		rra(stack_a), a++;
+        		rra(stack_a,0), a++;
 		}
 		else if(b != 0)
 		{
     		if(b > 0)
-        		rb(stack_b), b--;
+        		rb(stack_b,0), b--;
     		else
-        		rrb(stack_b), b++; 
+        		rrb(stack_b,0), b++; 
 		}
 		else 
 			break;
@@ -452,12 +453,12 @@ void bring_min_to_top(t_stack **stack_a)
     if (min_pos <= size / 2)
     {
         while (*stack_a != min_node)
-            ra(stack_a);
+            ra(stack_a,0);
     }
     else
     {
         while (*stack_a != min_node)
-            rra(stack_a);
+            rra(stack_a,0);
     }
 }
 
@@ -473,16 +474,16 @@ void push_back_to_a(t_stack **stack_a, t_stack **stack_b)
         while (*stack_b != max_b)
         {
             if (max_b->cost > 0)
-                rb(stack_b);
+                rb(stack_b,0);
             else
-                rrb(stack_b);
+                rrb(stack_b,0);
         }
         while (*stack_a != target_a)
         {
             if (target_a->cost > 0)
-                ra(stack_a);
+                ra(stack_a,0);
             else
-                rra(stack_a);
+                rra(stack_a,0);
         }
         pa(stack_a, stack_b);
     }
@@ -506,26 +507,22 @@ void turk_sort(t_stack **stack)
         find_target(stack, &stack_b);
     }
 
-    printf("burda\n");
-
     sort_three(stack);
-
-    printf("burda\n");
-    t_stack *tmp_b = stack_b;
-    while (tmp_b)
-    {
-        printf("b%d\n", tmp_b->data);
-        tmp_b = tmp_b->next;
-    }
+    // t_stack *tmp_b = stack_b;
+    // while (tmp_b)
+    // {
+    //     printf("b%d\n", tmp_b->data);
+    //     tmp_b = tmp_b->next;
+    // }
 	push_back_to_a(stack, &stack_b);
-	//bring_min_to_top(stack);
+	bring_min_to_top(stack);
 
-	t_stack *tmp_a = *stack;
-    while (tmp_a)
-    {
-        printf("a%d\n", tmp_a->data);
-        tmp_a = tmp_a->next;
-    }
+	// t_stack *tmp_a = *stack;
+    // while (tmp_a)
+    // {
+    //     printf("a%d\n", tmp_a->data);
+    //     tmp_a = tmp_a->next;
+    // }
 	
 }
 

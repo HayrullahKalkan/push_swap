@@ -6,7 +6,7 @@
 /*   By: hakalkan <hakalkan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/13 11:39:50 by hakalkan          #+#    #+#             */
-/*   Updated: 2025/10/14 15:15:55 by hakalkan         ###   ########.fr       */
+/*   Updated: 2025/10/17 19:39:11 by hakalkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,8 @@ void pa(t_stack **stack_a, t_stack **stack_b)
 	head_b = pop(stack_b);
 	head_b->next = (*stack_a); 
 	*stack_a = head_b;
+    write(1,"pa\n",3);
+
 }
 
 void pb(t_stack **stack_a, t_stack **stack_b)
@@ -42,4 +44,6 @@ void pb(t_stack **stack_a, t_stack **stack_b)
         return;
     head_a->next = (*stack_b); 
     *stack_b = head_a;
+	    
+    write(1,"pb\n",3);
 }
