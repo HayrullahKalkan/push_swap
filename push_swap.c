@@ -530,6 +530,8 @@ void turk_sort(t_stack **stack)
 }
 
 
+
+
 int main(int ac, char **argv)
 {
 	int *arr;
