@@ -239,7 +239,7 @@ void cost_accounting(t_stack **stack_a)
 		if (i <= size / 2)
 			tmp->cost = i;
 		else
-			tmp->cost = (size - i) * -1;
+			tmp->cost = i - size;
 		i++;
 		tmp = tmp->next;
 	}
@@ -251,35 +251,36 @@ void first_two_push(t_stack **stack_a, t_stack **stack_b)
 	pb(stack_a,stack_b);
 }
 
-
+// ...existing code...
 void cost_total(t_stack *stack_a, t_stack *stack_b)
 {
-	int i;
-	int j;
+    int a_abs = 0;
+    int b_abs = 0;
 
-	i = 0;
-	j = 0;
-	if (stack_a->cost < 0 && stack_b->cost < 0)
-	{
-		if (stack_a->cost > stack_b->cost)
-			stack_a->tot_cos = stack_b->cost * -1;
-		else
-			stack_a->tot_cos = stack_a->cost * -1;
-	}
-	else if (stack_a->cost > 0 && stack_b->cost > 0)
-		stack_a->tot_cos = stack_a->cost + stack_b->cost;
-	else
-	{
-		if (stack_a->cost < 0)
-			i = stack_a->cost * -1;
-		if (stack_b->cost < 0)
-			j = stack_b->cost * -1;
-		if (i > 0)
-			stack_a->tot_cos = i + stack_b->cost;
-		else
-			stack_a->tot_cos = stack_a->cost + j;
-	}
+    if (!stack_a)
+        return;
+    if (!stack_b)
+    {
+        stack_a->tot_cos = (stack_a->cost < 0) ? -stack_a->cost : stack_a->cost;
+        return;
+    }
+
+    a_abs = (stack_a->cost < 0) ? -stack_a->cost : stack_a->cost;
+    b_abs = (stack_b->cost < 0) ? -stack_b->cost : stack_b->cost;
+
+    /* Aynı yöndeyse (ikisi de pozitif veya ikisi de negatif) */
+    if ((stack_a->cost >= 0 && stack_b->cost >= 0) ||
+        (stack_a->cost <= 0 && stack_b->cost <= 0))
+    {
+        stack_a->tot_cos = (a_abs > b_abs) ? a_abs : b_abs;
+    }
+    else
+    {
+        /* Farklı yönlerdeyse ayrı ayrı toplam */
+        stack_a->tot_cos = a_abs + b_abs;
+    }
 }
+// ...existing code...
 
 t_stack *find_biggest(t_stack *stack_b)
 {
@@ -466,11 +467,11 @@ void push_back_to_a(t_stack **stack_a, t_stack **stack_b)
 {
     while (*stack_b)
     {
-        t_stack *max_b = find_biggest(*stack_b);
-        t_stack *target_a = find_target_in_a(*stack_a, max_b->data);
-
+        t_stack *max_b;
+        t_stack *target_a;
+		
         max_b = find_biggest(*stack_b);
-        target_a = find_target_in_a(*stack_a, max_b->data);
+        target_a = lstlast(*stack_a);
         while (*stack_b != max_b)
         {
             if (max_b->cost > 0)
@@ -478,13 +479,10 @@ void push_back_to_a(t_stack **stack_a, t_stack **stack_b)
             else
                 rrb(stack_b,0);
         }
-        while (*stack_a != target_a)
-        {
-            if (target_a->cost > 0)
-                ra(stack_a,0);
-            else
-                rra(stack_a,0);
-        }
+		if(target_a->data > max_b->data && target_a->data < (*stack_a)->data)
+		{
+			rra(stack_a,0);
+		}
         pa(stack_a, stack_b);
     }
 }

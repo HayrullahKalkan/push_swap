@@ -1,6 +1,6 @@
 a stağiinin başını aldım kendinden küçük en büyük sayı var mı diye baktım varsa onun üstünde olacak şekilde maliyet hesabı yaptım 
 eğer yoksa b stağinin en büyüğünün üstüne olmalı şekilde maliyet hesabı yaptım 
-ve bu işlem bütün a staği gezilerek yapılmalı. her seferinde en az maliyetli olan doğru olan pushlanıp en az maliyetle bu iş yapılmalı ada üç tane kalınca sonra onlar kendi araında sıralanıp b den aya geri gitmeli 
+ve bu işlem bütün a staği gezilerek yapılmalı. her seferinde en az maliyetli olan doğru olan pushlanıp en az maliyetle bu iş yapılmalı ada üç tane kalınca sonra onlar kendi araında sıralanıp b den a ya geri gitmeli 
 ve sonuçta bütün ayılar sıralanmış olmalı push swap projesi bu 42 okulaırının 
 
 rrr f_max()
