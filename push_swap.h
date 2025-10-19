@@ -6,7 +6,7 @@
 /*   By: hakalkan <hakalkan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 18:49:28 by hakalkan          #+#    #+#             */
-/*   Updated: 2025/10/17 19:40:15 by hakalkan         ###   ########.fr       */
+/*   Updated: 2025/10/19 19:44:48 by hakalkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,8 @@ t_stack	*lstnew(int content);
 void	lstadd_back(t_stack **lst, t_stack *new);
 int	lstsize(t_stack *lst);
 t_stack	*lstlast(t_stack *lst);
+void	lstclear(t_stack **lst);
+
 
 
 

@@ -6,7 +6,7 @@
 /*   By: hakalkan <hakalkan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 19:31:00 by hakalkan          #+#    #+#             */
-/*   Updated: 2025/10/17 20:52:00 by hakalkan         ###   ########.fr       */
+/*   Updated: 2025/10/19 21:25:26 by hakalkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ int *max_min(char **argv, int len)
 	long digit;
 	
 	i = 0;
-	a = malloc(sizeof(int) * (len + 1));
+	a = malloc(sizeof(int) * (len));
 	if (!a)
     	return (NULL);
 
@@ -136,10 +136,14 @@ void arg_split(char **argv, char **digits,int *k)
 		{
 			digits[*k] = ft_strdup(tmp[j]);
 			(*k)++;
+			free(tmp[j]);
 			j++;
 		}
+		free(tmp);
+
 		i++;
 	}
+
 	digits[*k] = NULL;
 }
 int *checker(char **argv)
@@ -147,9 +151,9 @@ int *checker(char **argv)
 	char **digits;
 	int *ar;
 	int k;
+	int idx;
 	
 	k = 0;
-	digits = NULL;
 	digits = malloc(sizeof(char *) * (arg_len(argv) + 1));
 	if(!digits)
 		return NULL;
@@ -159,13 +163,36 @@ int *checker(char **argv)
 	{
 		ar = max_min(digits,k);
 		if (ar == NULL)
-            return (free(digits),(NULL));
-		if(check_dup(ar, k))
-			return (write(1,"Error1\n",6), NULL);
-		return ar;
+        {
+            idx = 0;
+            while (digits[idx])
+                free(digits[idx++]);
+            free(digits);
+            return NULL;
+        }
+		  if(check_dup(ar, k))
+        {
+            write(1,"Error1\n",6);
+            free(ar);
+            idx = 0;
+            while (digits[idx])
+                free(digits[idx++]);
+            free(digits);
+            return NULL;
+        }
+		idx = 0;
+        while (digits[idx])
+            free(digits[idx++]);
+		return free(digits),ar;
 	}
 	else
-		return (write(1,"Error2\n",6),NULL);
+    {
+        idx = 0;
+        while (digits && digits[idx])
+            free(digits[idx++]);
+        free(digits);
+        return (write(1,"Error2\n",6),NULL);
+    }
 
 	return NULL;	
 }
@@ -176,25 +203,56 @@ t_stack *parser(int *ar)
 	t_stack	*stack;
 	t_stack *node;
 	int content;
-	
-	stack = malloc(sizeof(t_stack *));
-    if (!stack)
-        return NULL;
+
     stack = NULL;
 	i = 0;
 	while (ar[i])
 	{
 		content = ar[i];
-		if(!content)
-			return NULL;
 		node = lstnew(content);
+		if (!node)
+        {
+            lstclear(&stack);
+            free(ar);
+            return NULL;
+        }
 		lstadd_back(&stack,node);
 		i++;
 	}
-
+	free(ar);
 	return (stack);
 }
 #include <stdio.h>
+
+void sort_three_max(t_stack **stack)
+{
+    int a;
+    int b;
+    int c;
+	// abc
+	// acb
+	a = (*stack)->data;
+	b = (*stack)->next->data;
+	c = (*stack)->next->next->data;
+  	if (a < b && b > c && a > c)
+        sa(stack, 0); // bac → abc
+    else if (a < b && b < c)
+    {
+        sa(stack, 0);
+        rra(stack, 0); // cba
+    }
+    else if (a > b && b < c && a < c)
+        rra(stack, 0); // bca
+    else if (a < b && b > c && a < c)
+        ra(stack, 0); // cab
+    else if (a > b && b < c && a > c)
+    {
+        ra(stack, 0);
+        sa(stack, 0); // acb → cba
+    }
+    // else: already in descending order
+}
+
 
 void sort_three(t_stack **stack)
 {
@@ -469,7 +527,9 @@ void push_back_to_a(t_stack **stack_a, t_stack **stack_b)
     {
         t_stack *max_b;
         t_stack *target_a;
+		int i;
 		
+		i = 0;
         max_b = find_biggest(*stack_b);
         target_a = lstlast(*stack_a);
         while (*stack_b != max_b)
@@ -479,9 +539,15 @@ void push_back_to_a(t_stack **stack_a, t_stack **stack_b)
             else
                 rrb(stack_b,0);
         }
-		if(target_a->data > max_b->data && target_a->data < (*stack_a)->data)
+		while (i < 3)
 		{
-			rra(stack_a,0);
+        	target_a = lstlast(*stack_a);
+
+			if(target_a->data > max_b->data && target_a->data < (*stack_a)->data)
+			{
+				rra(stack_a,0);
+			}
+			i++;
 		}
         pa(stack_a, stack_b);
     }
@@ -504,8 +570,12 @@ void turk_sort(t_stack **stack)
         cost_accounting(&stack_b);
         find_target(stack, &stack_b);
     }
-
-    sort_three(stack);
+	if(lstsize(stack_b) < 3)
+	{
+		sort_three_max(stack);	
+	}
+	else
+	    sort_three(stack);
     // t_stack *tmp_b = stack_b;
     // while (tmp_b)
     // {
@@ -521,6 +591,7 @@ void turk_sort(t_stack **stack)
     //     printf("a%d\n", tmp_a->data);
     //     tmp_a = tmp_a->next;
     // }
+	lstclear(stack);
 	
 }
 

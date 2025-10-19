@@ -6,7 +6,7 @@
 /*   By: hakalkan <hakalkan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/14 13:12:55 by hakalkan          #+#    #+#             */
-/*   Updated: 2025/10/14 13:33:30 by hakalkan         ###   ########.fr       */
+/*   Updated: 2025/10/19 19:44:41 by hakalkan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,4 +58,16 @@ t_stack	*lstlast(t_stack *lst)
 		lst = lst->next;
 	}
 	return (lst);
+}
+void	lstclear(t_stack **lst)
+{
+	t_stack	*tmp;
+
+	while (*lst)
+	{
+		tmp = *lst;
+		*lst = (*lst)->next;
+		free(tmp);
+	}
+	*lst = NULL;
 }
