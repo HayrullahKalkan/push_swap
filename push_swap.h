@@ -27,27 +27,52 @@ typedef struct s_stack
 	
 }	t_stack;
 
-void sa(t_stack **lst, int flag);
-void sb(t_stack **lst, int flag);
-void ss(t_stack **stack_a, t_stack **stack_b,int flag);
-t_stack *pop(t_stack **lst);
-void pa(t_stack **stack_a, t_stack **stack_b);
-void pb(t_stack **stack_a, t_stack **stack_b);
-void ra(t_stack **lst, int flag);
-void rb(t_stack **lst, int flag);
-void rr(t_stack **stack_a, t_stack **stack_b,int flag);
-void rra(t_stack **lst,int flag);
-void rrb(t_stack **lst, int flag);
-void rrr(t_stack **stack_a, t_stack **stack_b, int flag);
-t_stack	*lstnew(int content);
-void	lstadd_back(t_stack **lst, t_stack *new);
-int	lstsize(t_stack *lst);
-t_stack	*lstlast(t_stack *lst);
-void	lstclear(t_stack **lst);
 
 
 
+/* parser.c */
+int     *checker(char **argv);
+t_stack *parser(int *ar);
 
+/* list.c */
+t_stack *lstnew(int content);
+void    lstadd_back(t_stack **lst, t_stack *new);
+t_stack *lstlast(t_stack *lst);
+int     lstsize(t_stack *lst);
+void    lstclear(t_stack **lst);
+
+void    sa(t_stack **a, int print);
+void    sb(t_stack **b, int print);
+void    ss(t_stack **a, t_stack **b, int print);
+void    pa(t_stack **a, t_stack **b);
+void    pb(t_stack **a, t_stack **b);
+void    ra(t_stack **a, int print);
+void    rb(t_stack **b, int print);
+void    rr(t_stack **a, t_stack **b, int print);
+void    rra(t_stack **a, int print);
+void    rrb(t_stack **b, int print);
+void    rrr(t_stack **a, t_stack **b, int print);
+
+long ft_atol(char *str);
+/* sort_helpers.c */
+void    sort_three(t_stack **stack);
+void    sort_three_max(t_stack **stack);
+void    first_two_push(t_stack **a, t_stack **b);
+void    push_back_to_a(t_stack **a, t_stack **b);
+void    bring_node_to_top(t_stack **stack, t_stack *node);
+void    bring_node_to_top_b(t_stack **stack_b, t_stack *node);
+void    bring_min_to_top(t_stack **stack);
+
+/* cost.c */
+void    cost_accounting(t_stack **stack_a);
+void    cost_total(t_stack *stack_a, t_stack *stack_b);
+t_stack *find_biggest(t_stack *stack_b);
+t_stack *min_stack_b(t_stack *stack_a, t_stack *stack_b);
+t_stack *target_push(t_stack **stack_a);
+void    get_location(t_stack **stack_a, t_stack **stack_b);
+void    find_target(t_stack **stack_a, t_stack **stack_b);
+t_stack *find_target_in_a(t_stack *stack_a, int value);
+t_stack *find_min_node(t_stack *stack_a);
 
 
 #endif
