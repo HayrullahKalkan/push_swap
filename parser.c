@@ -115,79 +115,86 @@ void arg_split(char **argv, char **digits,int *k)
 
 	digits[*k] = NULL;
 }
-int *checker(char **argv)
-{
-	char **digits;
-	int *ar;
-	int k;
-	int idx;
-	
-	k = 0;
-	digits = malloc(sizeof(char *) * (arg_len(argv) + 1));
-	if(!digits)
-		return NULL;
-	arg_split(argv,digits,&k);
-	digits[k] = NULL;
-	if (checker_digits(digits) == 1)
-	{
-		ar = max_min(digits,k);
-		if (ar == NULL)
-        {
-            idx = 0;
-            while (digits[idx])
-                free(digits[idx++]);
-            free(digits);
-            return NULL;
-        }
-		  if(check_dup(ar, k))
-        {
-            write(1,"Error1\n",6);
-            free(ar);
-            idx = 0;
-            while (digits[idx])
-                free(digits[idx++]);
-            free(digits);
-            return NULL;
-        }
-		idx = 0;
-        while (digits[idx])
-            free(digits[idx++]);
-		return free(digits),ar;
-	}
-	else
-    {
-        idx = 0;
-        while (digits && digits[idx])
-            free(digits[idx++]);
-        free(digits);
-        return (write(1,"Error2\n",6),NULL);
-    }
 
-	return NULL;	
+static int	checker_utils(char **digits, int *ar, int k)
+{
+	int	idx;
+
+	if (ar == NULL)
+	{
+		idx = 0;
+		while (digits[idx])
+			free(digits[idx++]);
+		free(digits);
+		return (0);
+	}
+	if (check_dup(ar, k))
+	{
+		write(1, "Error1\n", 6);
+		free(ar);
+		idx = 0;
+		while (digits[idx])
+			free(digits[idx++]);
+		free(digits);
+		return (0);
+	}
+	idx = 0;
+	while (digits[idx])
+		free(digits[idx++]);
+	free(digits);
+	return (1);
 }
 
-t_stack *parser(int *ar)
+int	*checker(char **argv, int *len)
 {
-	int i;
-	t_stack	*stack;
-	t_stack *node;
-	int content;
+	char	**digits;
+	int		*ar;
+	int		k;
+	int		idx;
 
-    stack = NULL;
-	i = 0;
-	while (ar[i])
+	k = 0;
+	digits = malloc(sizeof(char *) * (arg_len(argv) + 1));
+	if (!digits)
+		return (NULL);
+	arg_split(argv, digits, &k);
+	digits[k] = NULL;
+	*len = k;
+	if (checker_digits(digits))
 	{
-		content = ar[i];
-		node = lstnew(content);
-		if (!node)
+		ar = max_min(digits, k);
+		if (!checker_utils(digits, ar, k))
+			return (NULL);
+		return (ar);
+	}
+	idx = 0;
+	while (digits && digits[idx])
+		free(digits[idx++]);
+	free(digits);
+	write(1, "Error2\n", 6);
+	return (NULL);
+}
+
+t_stack *parser(int *ar, int len)
+{
+    int i = 0;
+    t_stack *stack = NULL;
+    t_stack *node;
+    int content;
+
+    while (i < len)
+    {
+        content = ar[i];
+        node = lstnew(content);
+        if (!node)
         {
             lstclear(&stack);
             free(ar);
             return NULL;
         }
-		lstadd_back(&stack,node);
-		i++;
-	}
-	free(ar);
-	return (stack);
+        lstadd_back(&stack, node);
+        i++;
+    }
+    free(ar);
+    return stack;
 }
+

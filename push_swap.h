@@ -31,8 +31,8 @@ typedef struct s_stack
 
 
 /* parser.c */
-int     *checker(char **argv);
-t_stack *parser(int *ar);
+int     *checker(char **argv, int *len);
+t_stack *parser(int *ar, int len);
 
 /* list.c */
 t_stack *lstnew(int content);

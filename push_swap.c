@@ -12,40 +12,76 @@
 
 #include "push_swap.h"
 
-
-void turk_sort(t_stack **stack)
+static void small_sort(t_stack **a)
 {
-    t_stack *stack_b = NULL;
+	int size;
 
-    first_two_push(stack, &stack_b);
-    cost_accounting(stack);
-    cost_accounting(&stack_b);
-    find_target(stack, &stack_b);
-    while (lstsize(*stack) > 3)
-    {
-        get_location(stack, &stack_b);
-        cost_accounting(stack);
-        cost_accounting(&stack_b);
-        find_target(stack, &stack_b);
-    }
-	if (lstsize(*stack) == 3)
-        sort_three(stack);
-	else if (lstsize(*stack) == 2)
+	size = lstsize(*a);
+	if (size <= 1)
+		return;
+	if (size == 2)
 	{
-		if ((*stack)->data > (*stack)->next->data)
-			sa(stack,0);
+		if ((*a)->data > (*a)->next->data)
+			sa(a, 1);
 	}
-	if (stack_b)
-	{
-		t_stack *max_b = find_biggest(stack_b);
-		bring_node_to_top_b(&stack_b,max_b);
-		push_back_to_a(stack, &stack_b);
-	}
-	
-	bring_min_to_top(stack);
-	lstclear(stack);	
+	else if (size == 3)
+		sort_three(a);
 }
 
+static void first_push_ops(t_stack **a, t_stack **b)
+{
+	first_two_push(a, b);
+	if (*a)
+		cost_accounting(a);
+	if (*b)
+		cost_accounting(b);
+	find_target(a, b);
+}
+
+static void loop_sort(t_stack **a, t_stack **b)
+{
+	while (lstsize(*a) > 3)
+	{
+		get_location(a, b);
+		if (*a)
+			cost_accounting(a);
+		if (*b)
+			cost_accounting(b);
+		find_target(a, b);
+	}
+}
+
+static void final_sort(t_stack **a, t_stack **b)
+{
+	t_stack *max_b;
+
+	small_sort(a);
+	if (*b)
+	{
+		max_b = find_biggest(*b);
+		bring_node_to_top_b(b, max_b);
+		push_back_to_a(a, b);
+	}
+	bring_min_to_top(a);
+}
+
+void turk_sort(t_stack **a)
+{
+	t_stack *b;
+	int size;
+
+	if (!a || !*a)
+		return;
+	b = NULL;
+	size = lstsize(*a);
+	if (size <= 3)
+		return (small_sort(a));
+
+	first_push_ops(a, &b);
+	loop_sort(a, &b);
+	final_sort(a, &b);
+	lstclear(a);
+}
 
 
 
@@ -53,22 +89,20 @@ int main(int ac, char **argv)
 {
 	int *arr;
 	t_stack *stack;
+	int i;
 
 	stack = NULL;
 	if(ac > 1)
 	{
-		arr = checker(argv);
+		arr = checker(argv, &i);
 		if (arr == NULL)
 			return 0;
 		
-		stack =  parser(arr);
+		stack =  parser(arr,i);
 		turk_sort(&stack);
-	
-
 	}
 	else
 		return (0);
 }
 
 
-//a nın ve b nin maliyetini ayrı ayrı hesaplayıp topla

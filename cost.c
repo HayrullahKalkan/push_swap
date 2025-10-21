@@ -102,50 +102,65 @@ t_stack *target_push(t_stack **stack_a)
 	return target;
 }
 
-void get_location(t_stack **stack_a, t_stack **stack_b)
+static void	rotate_both(t_stack **a, t_stack **b, int *x, int *y)
 {
-	t_stack *target_a;
-	t_stack *target_b;
-	int a;
-	int b;
-	
-	target_a = target_push(stack_a);
-	target_b = min_stack_b(target_a, *stack_b);
-	a = target_a->cost;
-	b = target_b->cost;
-	while (*stack_a != target_a || *stack_b != target_b)
+	if (*x > 0 && *y > 0)
+		(rr(a, b, 1), (*x)--, (*y)--);
+	else if (*x < 0 && *y < 0)
+		(rrr(a, b, 1), (*x)++, (*y)++);
+}
+
+static void	rotate_single(t_stack **stack, int *n, int type)
+{
+	if (*n > 0)
 	{
-		if(a > 0 && b > 0)
-		{
-			rr(stack_a, stack_b,1);
-    		a--;
-    		b--;
-		}
-		else if(a < 0 && b < 0)
-		{
-			rrr(stack_a, stack_b,1);
-    		a++;
-    		b++;
-		}
-		else if(a != 0)
-		{
-    		if(a > 0)
-        		ra(stack_a,0), a--;
-    		else
-        		rra(stack_a,0), a++;
-		}
-		else if(b != 0)
-		{
-    		if(b > 0)
-        		rb(stack_b,0), b--;
-    		else
-        		rrb(stack_b,0), b++; 
-		}
-		else 
+		if (type == 0)
+			ra(stack, 0);
+		else
+			rb(stack, 0);
+		(*n)--;
+	}
+	else
+	{
+		if (type == 0)
+			rra(stack, 0);
+		else
+			rrb(stack, 0);
+		(*n)++;
+	}
+}
+
+static void	get_location_utils(t_stack **a, t_stack **b, int *x, int *y)
+{
+	while (*x != 0 || *y != 0)
+	{
+		if ((*x > 0 && *y > 0) || (*x < 0 && *y < 0))
+			rotate_both(a, b, x, y);
+		else if (*x != 0)
+			rotate_single(a, x, 0);
+		else if (*y != 0)
+			rotate_single(b, y, 1);
+		else
 			break;
 	}
-	pb(stack_a,stack_b);
 }
+
+void	get_location(t_stack **a, t_stack **b)
+{
+	t_stack	*t_a;
+	t_stack	*t_b;
+	int		x;
+	int		y;
+
+	t_a = target_push(a);
+	t_b = min_stack_b(t_a, *b);
+	x = t_a->cost;
+	y = t_b->cost;
+	while (*a != t_a || *b != t_b)
+		get_location_utils(a, b, &x, &y);
+	pb(a, b);
+}
+
 void find_target(t_stack **stack_a, t_stack **stack_b)
 {
 	t_stack *tmp_a;
@@ -159,36 +174,50 @@ void find_target(t_stack **stack_a, t_stack **stack_b)
 		tmp_a = tmp_a->next;
 	}
 }
-t_stack *find_target_in_a(t_stack *stack_a, int value)
-{
-    t_stack *tmp = stack_a;
-    t_stack *target = NULL;
-    int min_diff = 2147483647;
 
-    while (tmp)
-    {
-        if (tmp->data > value && (tmp->data - value) < min_diff)
-        {
-            min_diff = tmp->data - value;
-            target = tmp;
-        }
-        tmp = tmp->next;
-    }
-    if (!target)
-    {
-        tmp = stack_a;
-        int max = -2147483648;
-        while (tmp)
-        {
-            if (tmp->data > max)
-            {
-                max = tmp->data;
-                target = tmp;
-            }
-            tmp = tmp->next;
-        }
-    }
-    return target;
+static t_stack	*find_max_node(t_stack *a)
+{
+	t_stack	*tmp;
+	t_stack	*max_node;
+	int		max;
+
+	tmp = a;
+	max = -2147483648;
+	max_node = a;
+	while (tmp)
+	{
+		if (tmp->data > max)
+		{
+			max = tmp->data;
+			max_node = tmp;
+		}
+		tmp = tmp->next;
+	}
+	return (max_node);
 }
+
+t_stack	*find_target_in_a(t_stack *a, int val)
+{
+	t_stack	*tmp;
+	t_stack	*target;
+	int		min_diff;
+
+	tmp = a;
+	target = NULL;
+	min_diff = 2147483647;
+	while (tmp)
+	{
+		if (tmp->data > val && (tmp->data - val) < min_diff)
+		{
+			min_diff = tmp->data - val;
+			target = tmp;
+		}
+		tmp = tmp->next;
+	}
+	if (!target)
+		target = find_max_node(a);
+	return (target);
+}
+
 
 

@@ -5,7 +5,7 @@ void sort_three(t_stack **stack)
     int a;
     int b;
     int c;
-
+    
 	a = (*stack)->data;
 	b = (*stack)->next->data;
 	c = (*stack)->next->next->data;
@@ -81,9 +81,9 @@ void push_back_to_a(t_stack **stack_a, t_stack **stack_b)
 		{
         	target_a = lstlast(*stack_a);
 			if(target_a->data > (*stack_b)->data && target_a->data < (*stack_a)->data)
-			{
 				rra(stack_a,0);
-			}
+            else if(lstsize(*stack_a) == 3 && target_a->data > (*stack_b)->data)
+                rra(stack_a,0);
 			i++;
 		}
         pa(stack_a, stack_b);
@@ -140,35 +140,44 @@ void bring_node_to_top(t_stack **stack, t_stack *node)
     }
 }
 
-void bring_min_to_top(t_stack **stack_a)
+static t_stack	*find_min_node_pos(t_stack *stack, int *min_pos)
 {
-    if (!stack_a || !*stack_a)
-        return;
+	t_stack	*tmp;
+	t_stack	*min_node;
+	int		pos;
 
-    t_stack *tmp = *stack_a;
-    t_stack *min_node = *stack_a;
-    int pos = 0;
-    int min_pos = 0;
-
-    while (tmp)
-    {
-        if (tmp->data < min_node->data)
-        {
-            min_node = tmp;
-            min_pos = pos;
-        }
-        tmp = tmp->next;
-        pos++;
-    }
-    int size = lstsize(*stack_a);
-    if (min_pos <= size / 2)
-    {
-        while (*stack_a != min_node)
-            ra(stack_a,0);
-    }
-    else
-    {
-        while (*stack_a != min_node)
-            rra(stack_a,0);
-    }
+	tmp = stack;
+	min_node = stack;
+	pos = 0;
+	*min_pos = 0;
+	while (tmp)
+	{
+		if (tmp->data < min_node->data)
+		{
+			min_node = tmp;
+			*min_pos = pos;
+		}
+		tmp = tmp->next;
+		pos++;
+	}
+	return (min_node);
 }
+
+void	bring_min_to_top(t_stack **stack_a)
+{
+	t_stack	*min_node;
+	int		size;
+	int		min_pos;
+
+	if (!stack_a || !*stack_a)
+		return;
+	min_node = find_min_node_pos(*stack_a, &min_pos);
+	size = lstsize(*stack_a);
+	if (min_pos <= size / 2)
+		while (*stack_a != min_node)
+			ra(stack_a, 0);
+	else
+		while (*stack_a != min_node)
+			rra(stack_a, 0);
+}
+
