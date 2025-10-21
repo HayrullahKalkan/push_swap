@@ -1,10 +1,22 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   cost.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: hakalkan <hakalkan@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/21 21:45:45 by hakalkan          #+#    #+#             */
+/*   Updated: 2025/10/21 21:45:45 by hakalkan         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "push_swap.h"
 
-void cost_accounting(t_stack **stack_a)
+void	cost_accounting(t_stack **stack_a)
 {
-	t_stack *tmp;
-	int size;
-	int i;
+	t_stack	*tmp;
+	int		size;
+	int		i;
 
 	tmp = *stack_a;
 	size = lstsize(tmp);
@@ -21,85 +33,89 @@ void cost_accounting(t_stack **stack_a)
 	}
 }
 
-void cost_total(t_stack *stack_a, t_stack *stack_b)
+void	cost_total(t_stack *stack_a, t_stack *stack_b)
 {
-    int a_abs;
-    int b_abs;
+	int	a_abs;
+	int	b_abs;
 
-    if (!stack_a)
-        return;
-    if (!stack_b)
-    {
-        stack_a->tot_cos = (stack_a->cost < 0) ? -stack_a->cost : stack_a->cost;
-        return;
-    }
-    a_abs = (stack_a->cost < 0) ? -stack_a->cost : stack_a->cost;
-    b_abs = (stack_b->cost < 0) ? -stack_b->cost : stack_b->cost;
-    if ((stack_a->cost >= 0 && stack_b->cost >= 0) ||
-        (stack_a->cost <= 0 && stack_b->cost <= 0))
-        stack_a->tot_cos = (a_abs > b_abs) ? a_abs : b_abs;
-    else
-        stack_a->tot_cos = a_abs + b_abs;
+	if (!stack_a)
+		return ;
+	if (!stack_b)
+	{
+		stack_a->tot_cos = (stack_a->cost < 0) ? -stack_a->cost : stack_a->cost;
+		return ;
+	}
+	a_abs = (stack_a->cost < 0) ? -stack_a->cost : stack_a->cost;
+	b_abs = (stack_b->cost < 0) ? -stack_b->cost : stack_b->cost;
+	if ((stack_a->cost >= 0 && stack_b->cost >= 0)
+		|| (stack_a->cost <= 0 && stack_b->cost <= 0))
+		stack_a->tot_cos = (a_abs > b_abs) ? a_abs : b_abs;
+	else
+		stack_a->tot_cos = a_abs + b_abs;
 }
 
-t_stack *find_biggest(t_stack *stack_b)
+t_stack	*find_biggest(t_stack *stack_b)
 {
-    t_stack *tmp_b = stack_b;
-    t_stack *best = NULL;
-    int biggest = -2147483648;
+	t_stack	*tmp_b;
+	t_stack	*best;
+	int		biggest;
 
-    while (tmp_b)
-    {
-        if (tmp_b->data > biggest)
-        {
-            biggest = tmp_b->data;
-            best = tmp_b;
-        }
-        tmp_b = tmp_b->next;
-    }
-    return (best);
+	tmp_b = stack_b;
+	best = NULL;
+	biggest = -2147483648;
+	while (tmp_b)
+	{
+		if (tmp_b->data > biggest)
+		{
+			biggest = tmp_b->data;
+			best = tmp_b;
+		}
+		tmp_b = tmp_b->next;
+	}
+	return (best);
 }
 
-t_stack *min_stack_b(t_stack *stack_a, t_stack *stack_b)
+t_stack	*min_stack_b(t_stack *stack_a, t_stack *stack_b)
 {
-    t_stack *tmp_b;
-    t_stack *best;
-    int max;
+	t_stack	*tmp_b;
+	t_stack	*best;
+	int		max;
 
 	tmp_b = stack_b;
 	best = NULL;
 	max = -2147483648;
-    while (tmp_b)
-    {
-        if (tmp_b->data < stack_a->data && tmp_b->data > max)
-        {
-            max = tmp_b->data;
-            best = tmp_b;
-        }
-        tmp_b = tmp_b->next;
-    }
-    if (best == NULL)
-        best = find_biggest(stack_b);
-    return (best);
+	while (tmp_b)
+	{
+		if (tmp_b->data < stack_a->data && tmp_b->data > max)
+		{
+			max = tmp_b->data;
+			best = tmp_b;
+		}
+		tmp_b = tmp_b->next;
+	}
+	if (best == NULL)
+		best = find_biggest(stack_b);
+	return (best);
 }
-t_stack *target_push(t_stack **stack_a)
+
+t_stack	*target_push(t_stack **stack_a)
 {
-	t_stack *tmp;
-	t_stack *target;
-	int min;
+	t_stack	*tmp;
+	t_stack	*target;
+	int		min;
 
 	tmp = (*stack_a);
 	min = 2147483647;
 	while (tmp)
 	{
-		if(tmp->tot_cos < min)
+		if (tmp->tot_cos < min)
 		{
 			min = tmp->tot_cos;
 			target = tmp;
 		}
 		tmp = tmp->next;
 	}
-	return target;
+	return (target);
 }
 
 static void	rotate_both(t_stack **a, t_stack **b, int *x, int *y)
@@ -141,7 +157,7 @@ static void	get_location_utils(t_stack **a, t_stack **b, int *x, int *y)
 		else if (*y != 0)
 			rotate_single(b, y, 1);
 		else
-			break;
+			break ;
 	}
 }
 
@@ -161,16 +177,16 @@ void	get_location(t_stack **a, t_stack **b)
 	pb(a, b);
 }
 
-void find_target(t_stack **stack_a, t_stack **stack_b)
+void	find_target(t_stack **stack_a, t_stack **stack_b)
 {
-	t_stack *tmp_a;
-	t_stack *tmp_b;
-	
+	t_stack	*tmp_a;
+	t_stack	*tmp_b;
+
 	tmp_a = *stack_a;
 	tmp_b = *stack_b;
 	while (tmp_a)
 	{
-		cost_total(tmp_a, min_stack_b(tmp_a,tmp_b));
+		cost_total(tmp_a, min_stack_b(tmp_a, tmp_b));
 		tmp_a = tmp_a->next;
 	}
 }
@@ -218,6 +234,3 @@ t_stack	*find_target_in_a(t_stack *a, int val)
 		target = find_max_node(a);
 	return (target);
 }
-
-
-
