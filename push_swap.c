@@ -12,22 +12,6 @@
 
 #include "push_swap.h"
 
-static void	small_sort(t_stack **a)
-{
-	int	size;
-
-	size = lstsize(*a);
-	if (size <= 1)
-		return ;
-	if (size == 2)
-	{
-		if ((*a)->data > (*a)->next->data)
-			sa(a, 1);
-	}
-	else if (size == 3)
-		sort_three(a);
-}
-
 static void	first_push_ops(t_stack **a, t_stack **b)
 {
 	first_two_push(a, b);

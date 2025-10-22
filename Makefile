@@ -1,6 +1,7 @@
 NAME = push_swap
 SRC = push_swap.c push.c parser.c swap.c lst_function.c \
-	  rotate.c rotate_re.c sort_helper.c cost.c utils.c sort_helper_utils.c
+	  rotate.c rotate_re.c sort_helper.c cost.c utils.c \
+	  sort_helper_utils.c get_location.c cost_utils.c parser_utils.c
 OBJ = $(SRC:.c=.o)
 CC = cc
 CFLAGS = -g -Wall -Wextra -Werror
